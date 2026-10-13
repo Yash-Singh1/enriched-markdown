@@ -37,6 +37,7 @@ class MathInlineRenderer(
         latex = latex,
         fontSize = fontSize,
         textColor = config.style.inlineMathStyle.color,
+        displayMode = node.type == MarkdownASTNode.NodeType.LatexMathDisplay,
         onLatexError = config.onLatexError,
       )
 

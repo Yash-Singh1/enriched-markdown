@@ -25,14 +25,16 @@ import io.ratex.RaTeXFontLoader
 import io.ratex.RaTeXRenderer
 import kotlin.math.ceil
 
-class MathContainerView(
+class MathContainerView @JvmOverloads constructor(
   context: Context,
   styleConfig: StyleConfig,
+  private val inlineOverlay: Boolean = false,
 ) : FrameLayout(context),
   BlockSegmentView {
   private val mathStyle: MathStyle = styleConfig.mathStyle
   private val scrollView = HorizontalScrollView(context)
   private var cachedLatex: String = ""
+  private var cachedDisplayMode = true
 
   var accessibilityLabels: AccessibilityLabels = AccessibilityLabels()
     set(value) {
@@ -46,7 +48,7 @@ class MathContainerView(
   override val segmentMarginBottom: Int get() = mathStyle.marginBottom.toInt()
 
   private val mathGravity =
-    when (mathStyle.textAlign) {
+    when (if (inlineOverlay) "left" else mathStyle.textAlign) {
       "left" -> Gravity.START
       "right" -> Gravity.END
       else -> Gravity.CENTER_HORIZONTAL
@@ -55,9 +57,9 @@ class MathContainerView(
   private val mathView = RaTeXCanvasView(context)
 
   init {
-    setBackgroundColor(mathStyle.backgroundColor)
+    setBackgroundColor(if (inlineOverlay) android.graphics.Color.TRANSPARENT else mathStyle.backgroundColor)
 
-    val paddingPx = mathStyle.padding.toInt()
+    val paddingPx = if (inlineOverlay) 0 else mathStyle.padding.toInt()
 
     RaTeXFontLoader.ensureLoaded(context)
 
@@ -74,6 +76,7 @@ class MathContainerView(
 
     scrollView.apply {
       isHorizontalScrollBarEnabled = true
+      isVerticalScrollBarEnabled = false
       overScrollMode = View.OVER_SCROLL_NEVER
       isFillViewport = true
       importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
@@ -91,19 +94,22 @@ class MathContainerView(
     mathView.setOnLongClickListener { view -> showContextMenu(view) }
   }
 
-  fun applyLatex(latex: String) {
+  @JvmOverloads
+  fun applyLatex(latex: String, displayMode: Boolean = true, fontSize: Float = mathStyle.fontSize, color: Int = mathStyle.color) {
+    cachedDisplayMode = displayMode
     cachedLatex = latex
     try {
-      val displayList = RaTeXEngine.parseBlocking(latex, displayMode = true, color = mathStyle.color)
-      mathView.renderer = RaTeXRenderer(displayList, mathStyle.fontSize) { RaTeXFontLoader.getTypeface(it) }
+      val displayList = RaTeXEngine.parseBlocking(latex, displayMode = displayMode, color = color)
+      mathView.renderer = RaTeXRenderer(displayList, fontSize) { RaTeXFontLoader.getTypeface(it) }
       mathView.fallbackText = null
     } catch (e: Exception) {
       Log.e(TAG, "Failed to render LaTeX", e)
       mathView.renderer = null
-      mathView.fallbackText = "\$\$" + latex + "\$\$"
-      mathView.fallbackColor = mathStyle.color
-      mathView.fallbackFontSize = mathStyle.fontSize
-      onLatexError?.report(latex, e.message, true)
+      val delimiter = if (displayMode) "\$\$" else "\$"
+      mathView.fallbackText = delimiter + latex + delimiter
+      mathView.fallbackColor = color
+      mathView.fallbackFontSize = fontSize
+      onLatexError?.report(latex, e.message, displayMode)
     }
     mathView.requestLayout()
     mathView.invalidate()
@@ -122,7 +128,8 @@ class MathContainerView(
         clipboard.setPrimaryClip(ClipData.newPlainText("Math", cachedLatex))
       }
       item(ContextMenuPopup.Icon.DOCUMENT, dynamicProps.copyAsMarkdownLabel) {
-        clipboard.setPrimaryClip(ClipData.newPlainText("Math", "$$\n$cachedLatex\n$$"))
+        val delimiter = if (cachedDisplayMode) "\$\$" else "\$"
+        clipboard.setPrimaryClip(ClipData.newPlainText("Math", "$delimiter$cachedLatex$delimiter"))
       }
     }
     return true
