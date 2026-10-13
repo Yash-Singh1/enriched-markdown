@@ -4699,6 +4699,11 @@ md_analyze_inlines(MD_CTX* ctx, const MD_LINE* lines, MD_SIZE n_lines, int table
     ctx->unresolved_link_tail = -1;
 
     if(table_mode) {
+        /* Math owns its pipes before GFM divides the row into cells. */
+        if(ctx->parser.flags & MD_FLAG_LATEXMATHSPANS) {
+            md_analyze_marks(ctx, lines, n_lines, 0, ctx->n_marks, _T("$"), NULL);
+            DOLLAR_OPENERS.top = -1;
+        }
         /* (2) Analyze table cell boundaries. */
         MD_ASSERT(n_lines == 1);
         ctx->n_table_cell_boundaries = 0;

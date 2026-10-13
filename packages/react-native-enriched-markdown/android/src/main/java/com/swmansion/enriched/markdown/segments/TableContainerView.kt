@@ -2,6 +2,7 @@ package com.swmansion.enriched.markdown.segments
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import com.swmansion.enriched.markdown.spans.WidthAwareMathSpan
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -72,6 +73,7 @@ class TableContainerView(
   private val scrollView =
     HorizontalScrollView(context).apply {
       isHorizontalScrollBarEnabled = true
+      isVerticalScrollBarEnabled = false
       overScrollMode = View.OVER_SCROLL_NEVER
       importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
       addView(
@@ -170,7 +172,10 @@ class TableContainerView(
       }
   }
 
-  private fun extractPlainText(node: MarkdownASTNode): String = node.content + node.children.joinToString("") { extractPlainText(it) }
+  private fun extractPlainText(node: MarkdownASTNode): String =
+    if (node.type == NodeType.LatexMathInline || node.type == NodeType.LatexMathDisplay)
+      MarkdownASTSerializer.serializeNode(node)
+    else node.content + node.children.joinToString("") { extractPlainText(it) }
 
   private fun textAlignmentFromString(align: String?): Layout.Alignment =
     when (align) {
@@ -469,16 +474,19 @@ class TableContainerView(
       texts.forEach { row ->
         row.forEachIndexed { colIndex, cellText ->
           // Images are sized in the row pass below, once the column width is known.
-          prepareWidthAwareSpans(cellText, maxColumnWidth.toInt(), includeImages = false)
+          prepareWidthAwareSpans(cellText, maxColumnWidth.toInt(), includeImages = false, includeMath = false)
           val layout =
             StaticLayout.Builder
               .obtain(cellText, 0, cellText.length, paint, maxColumnWidth.toInt())
               .setIncludePad(false)
               .build()
           val textWidth: Float = (0 until layout.lineCount).maxOfOrNull { line -> layout.getLineWidth(line) } ?: 0f
-          val effectiveWidth = if (cellHasBlockImage(cellText)) maxColumnWidth else ceil(textWidth)
+          val mathWidth = (cellText as? Spanned)?.getSpans(0, cellText.length, WidthAwareMathSpan::class.java)
+            ?.maxOfOrNull { it.naturalWidth().toFloat() } ?: 0f
+          val columnLimit = max(maxColumnWidth, mathWidth)
+          val effectiveWidth = max(mathWidth, if (cellHasBlockImage(cellText)) maxColumnWidth else ceil(textWidth))
           columnWidths[colIndex] =
-            max(columnWidths[colIndex], min(max(effectiveWidth + horizontalPadding, minColumnWidth), maxColumnWidth + horizontalPadding))
+            max(columnWidths[colIndex], min(max(effectiveWidth + horizontalPadding, minColumnWidth), columnLimit + horizontalPadding))
         }
       }
 
@@ -487,7 +495,7 @@ class TableContainerView(
           row
             .mapIndexed { colIndex, cellText ->
               val contentWidth = (columnWidths[colIndex] - horizontalPadding).toInt().coerceAtLeast(1)
-              prepareWidthAwareSpans(cellText, contentWidth)
+              prepareWidthAwareSpans(cellText, contentWidth, includeMath = false)
               val layout =
                 StaticLayout.Builder
                   .obtain(

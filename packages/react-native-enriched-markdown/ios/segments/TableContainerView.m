@@ -3,6 +3,10 @@
 #import "ENRMAccessibilityLabels.h"
 #import "ENRMHorizontalScrollView.h"
 #import "ENRMImageAttachment.h"
+#import "ENRMFeatureFlags.h"
+#if ENRICHED_MARKDOWN_MATH
+#import "ENRMMathInlineAttachment.h"
+#endif
 #import "ENRMLinkPillAttachment.h"
 #import "HTMLGenerator.h"
 #import "LinkTapUtils.h"
@@ -49,6 +53,8 @@ static NSString *ENRMTablePlainTextFromNode(MarkdownASTNode *node)
 {
   if (!node)
     return @"";
+  if (node.type == MarkdownNodeTypeLatexMathInline || node.type == MarkdownNodeTypeLatexMathDisplay)
+    return markdownFromASTNode(node);
   NSMutableString *buffer = [node.content mutableCopy] ?: [NSMutableString string];
   for (MarkdownASTNode *child in node.children) {
     [buffer appendString:ENRMTablePlainTextFromNode(child)];
@@ -89,6 +95,12 @@ static NSMutableAttributedString *ENRMTableRenderCellNode(MarkdownASTNode *cellN
 
   [context applyLinkAttributesToString:attributedText];
   [context applyImageAttributesToString:attributedText];
+#if ENRICHED_MARKDOWN_MATH
+  [attributedText enumerateAttribute:NSAttachmentAttributeName inRange:NSMakeRange(0, attributedText.length)
+                            options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+    if ([value isKindOfClass:ENRMMathInlineAttachment.class]) ((ENRMMathInlineAttachment *)value).tableCell = YES;
+  }];
+#endif
 
   ENRMPinLineMetricsToStyledFonts(attributedText, NSMakeRange(0, attributedText.length));
   ENRMApplyWritingDirectionMode(attributedText, writingDirectionMode, resolvedLayoutDirection);
@@ -199,12 +211,21 @@ static void ENRMTableComputeLayout(NSArray<NSArray<TableCellData *> *> *rows, NS
 
   for (NSArray<TableCellData *> *row in rows) {
     for (NSUInteger column = 0; column < row.count; column++) {
+      __block CGFloat columnLimit = maximumColumnWidth;
+#if ENRICHED_MARKDOWN_MATH
+      NSAttributedString *cellText = row[column].attributedText;
+      [cellText enumerateAttribute:NSAttachmentAttributeName inRange:NSMakeRange(0, cellText.length)
+                          options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+        if ([value isKindOfClass:ENRMMathInlineAttachment.class])
+          columnLimit = MAX(columnLimit, ((ENRMMathInlineAttachment *)value).formulaWidth);
+      }];
+#endif
       CGRect boundingRect = [row[column].attributedText
-          boundingRectWithSize:CGSizeMake(maximumColumnWidth, CGFLOAT_MAX)
+          boundingRectWithSize:CGSizeMake(columnLimit, CGFLOAT_MAX)
                        options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
                        context:nil];
       CGFloat width = MIN(MAX(ceil(boundingRect.size.width) + horizontalPadding, minimumColumnWidth),
-                          maximumColumnWidth + horizontalPadding);
+                          columnLimit + horizontalPadding);
       if (width > [colWidths[column] doubleValue])
         colWidths[column] = @(width);
     }
