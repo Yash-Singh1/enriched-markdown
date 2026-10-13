@@ -64,8 +64,11 @@ class EnrichedMarkdown(
   }
 
   private val mathOverlayManagerClass: Class<*>? by lazy {
-    try { Class.forName("com.swmansion.enriched.markdown.views.MathSpanOverlayManager") }
-    catch (_: Exception) { null }
+    try {
+      Class.forName("com.swmansion.enriched.markdown.views.MathSpanOverlayManager")
+    } catch (_: Exception) {
+      null
+    }
   }
   private var mathOverlayManager: Any? = null
 
@@ -595,9 +598,13 @@ class EnrichedMarkdown(
     val clazz = mathOverlayManagerClass ?: return
     val style = markdownStyle ?: return
     try {
-      val manager = mathOverlayManager ?: clazz.getConstructor(ViewGroup::class.java)
-        .newInstance(this).also { mathOverlayManager = it }
-      clazz.getMethod("update", StyleConfig::class.java, DynamicBlockProps::class.java, AccessibilityLabels::class.java)
+      val manager =
+        mathOverlayManager ?: clazz
+          .getConstructor(ViewGroup::class.java)
+          .newInstance(this)
+          .also { mathOverlayManager = it }
+      clazz
+        .getMethod("update", StyleConfig::class.java, DynamicBlockProps::class.java, AccessibilityLabels::class.java)
         .invoke(manager, style, dynamicProps, accessibilityLabels)
     } catch (e: Exception) {
       Log.e(TAG, "Failed to update math span overlays", e)

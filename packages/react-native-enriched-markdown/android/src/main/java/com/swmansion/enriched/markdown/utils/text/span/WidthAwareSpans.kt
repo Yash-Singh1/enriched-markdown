@@ -2,9 +2,9 @@ package com.swmansion.enriched.markdown.utils.text.span
 
 import android.text.Spanned
 import android.text.style.LeadingMarginSpan
-import com.swmansion.enriched.markdown.spans.WidthAwareMathSpan
 import com.swmansion.enriched.markdown.spans.ImageSpan
 import com.swmansion.enriched.markdown.spans.LinkPillSpan
+import com.swmansion.enriched.markdown.spans.WidthAwareMathSpan
 
 /**
  * Primes every span whose size depends on the layout width (pills, images). Call it
@@ -30,10 +30,14 @@ fun prepareWidthAwareSpans(
       .forEach { it.prepareForMeasurement(spanned, widthPx) }
   }
   var mathChanged = false
-  if (includeMath) spanned.getSpans(0, spanned.length, WidthAwareMathSpan::class.java).forEach {
-    val margin = spanned.getSpans(spanned.getSpanStart(it), spanned.getSpanEnd(it), LeadingMarginSpan::class.java)
-      .sumOf { indent -> maxOf(indent.getLeadingMargin(true), indent.getLeadingMargin(false)) }
-    if (it.setAvailableWidth((widthPx - margin).coerceAtLeast(1))) mathChanged = true
+  if (includeMath) {
+    spanned.getSpans(0, spanned.length, WidthAwareMathSpan::class.java).forEach {
+      val margin =
+        spanned
+          .getSpans(spanned.getSpanStart(it), spanned.getSpanEnd(it), LeadingMarginSpan::class.java)
+          .sumOf { indent -> maxOf(indent.getLeadingMargin(true), indent.getLeadingMargin(false)) }
+      if (it.setAvailableWidth((widthPx - margin).coerceAtLeast(1))) mathChanged = true
+    }
   }
   return pillsChanged || mathChanged
 }

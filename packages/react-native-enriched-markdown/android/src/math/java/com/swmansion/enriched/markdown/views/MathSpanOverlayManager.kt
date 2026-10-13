@@ -18,25 +18,34 @@ import com.swmansion.enriched.markdown.styles.StyleConfig
  * their natural width and scroll with their table instead of receiving overlays.
  * Keys survive vertical reflow during streaming so scroll positions stay intact.
  */
-class MathSpanOverlayManager(private val container: ViewGroup) {
+class MathSpanOverlayManager(
+  private val container: ViewGroup,
+) {
   private val overlaysByKey = HashMap<String, MathContainerView>()
 
-  private fun textViews(view: View): List<TextView> = when (view) {
-    is TableContainerView, is MathContainerView -> emptyList()
-    is TextView -> listOf(view)
-    is ViewGroup -> (0 until view.childCount).flatMap { textViews(view.getChildAt(it)) }
-    else -> emptyList()
-  }
+  private fun textViews(view: View): List<TextView> =
+    when (view) {
+      is TableContainerView, is MathContainerView -> emptyList()
+      is TextView -> listOf(view)
+      is ViewGroup -> (0 until view.childCount).flatMap { textViews(view.getChildAt(it)) }
+      else -> emptyList()
+    }
 
-  fun update(style: StyleConfig, dynamicProps: DynamicBlockProps, accessibilityLabels: AccessibilityLabels) {
+  fun update(
+    style: StyleConfig,
+    dynamicProps: DynamicBlockProps,
+    accessibilityLabels: AccessibilityLabels,
+  ) {
     val desiredKeys = HashSet<String>()
     var occurrence = 0
     for (textView in textViews(container)) {
       val spanned = textView.text as? Spanned ?: continue
       val layout = textView.layout ?: continue
       var spansChanged = false
-      val spans = spanned.getSpans(0, spanned.length, MathInlineSpan::class.java)
-        .sortedBy { spanned.getSpanStart(it) }
+      val spans =
+        spanned
+          .getSpans(0, spanned.length, MathInlineSpan::class.java)
+          .sortedBy { spanned.getSpanStart(it) }
       for (span in spans) {
         val index = occurrence++
         val start = spanned.getSpanStart(span)
@@ -53,12 +62,13 @@ class MathSpanOverlayManager(private val container: ViewGroup) {
         if (!overflows) continue
         val key = "$index|${span.latex}|${span.displayMode}|${span.fontSize}|${span.textColor}"
         desiredKeys += key
-        val overlay = overlaysByKey.getOrPut(key) {
-          MathContainerView(container.context, style, inlineOverlay = true).also {
-            it.applyLatex(span.latex, span.displayMode, span.fontSize, span.textColor)
-            container.addView(it, ViewGroup.LayoutParams(availableWidth, ViewGroup.LayoutParams.WRAP_CONTENT))
+        val overlay =
+          overlaysByKey.getOrPut(key) {
+            MathContainerView(container.context, style, inlineOverlay = true).also {
+              it.applyLatex(span.latex, span.displayMode, span.fontSize, span.textColor)
+              container.addView(it, ViewGroup.LayoutParams(availableWidth, ViewGroup.LayoutParams.WRAP_CONTENT))
+            }
           }
-        }
         overlay.dynamicProps = dynamicProps
         overlay.accessibilityLabels = accessibilityLabels
         val origin = Rect(0, 0, 0, 0)

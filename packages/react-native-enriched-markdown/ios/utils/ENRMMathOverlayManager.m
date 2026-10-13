@@ -3,10 +3,10 @@
 
 #if ENRICHED_MARKDOWN_MATH && !TARGET_OS_OSX
 
-#import "ENRMMathContainerView.h"
 #import "ENRMAccessibilityLabels.h"
-#import "ENRMMathInlineAttachment.h"
 #import "ENRMMarkdownTextView.h"
+#import "ENRMMathContainerView.h"
+#import "ENRMMathInlineAttachment.h"
 
 @implementation ENRMMathOverlayManager {
   __weak ENRMPlatformTextView *_textView;
@@ -97,15 +97,18 @@
                 if (frame.size.width <= 0 || frame.size.height <= 0)
                   return;
 
-                NSString *key = [NSString stringWithFormat:@"%lu|%@|%d|%g|%@", (unsigned long)index, attachment.latex,
-                                  attachment.displayMode, attachment.fontSize, attachment.mathTextColor];
+                NSString *key =
+                    [NSString stringWithFormat:@"%lu|%@|%d|%g|%@", (unsigned long)index, attachment.latex,
+                                               attachment.displayMode, attachment.fontSize, attachment.mathTextColor];
                 [desiredKeys addObject:key];
 
                 ENRMMathContainerView *overlay = self->_overlaysByKey[key];
                 if (!overlay) {
                   overlay = [[ENRMMathContainerView alloc] initWithConfig:self->_config];
-                  [overlay applyInlineLatex:attachment.latex displayMode:attachment.displayMode
-                                    fontSize:attachment.fontSize color:attachment.mathTextColor ?: UIColor.labelColor];
+                  [overlay applyInlineLatex:attachment.latex
+                                displayMode:attachment.displayMode
+                                   fontSize:attachment.fontSize
+                                      color:attachment.mathTextColor ?: UIColor.labelColor];
                   overlay.accessibilityLabels = [[ENRMAccessibilityLabels alloc] init];
                   [textView addSubview:overlay];
                   self->_overlaysByKey[key] = overlay;

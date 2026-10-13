@@ -95,8 +95,8 @@
 
   if (self.overflowsLine) {
     UIGraphicsImageRenderer *transparent = [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(1, 1)
-                                                                              format:format];
-    return [transparent imageWithActions:^(UIGraphicsImageRendererContext *rendererContext) {}];
+                                                                                  format:format];
+    return [transparent imageWithActions:^(UIGraphicsImageRendererContext *rendererContext){}];
   }
   UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:_cachedSize format:format];
   return [renderer imageWithActions:^(UIGraphicsImageRendererContext *rendererContext) {

@@ -112,7 +112,10 @@
   [self renderLatex:latex displayMode:YES fontSize:self.config.mathFontSize color:self.config.mathColor];
 }
 
-- (void)applyInlineLatex:(NSString *)latex displayMode:(BOOL)displayMode fontSize:(CGFloat)fontSize color:(RCTUIColor *)color
+- (void)applyInlineLatex:(NSString *)latex
+             displayMode:(BOOL)displayMode
+                fontSize:(CGFloat)fontSize
+                   color:(RCTUIColor *)color
 {
   _inlineOverlay = YES;
   [self renderLatex:latex displayMode:displayMode fontSize:fontSize color:color];
@@ -261,7 +264,8 @@
   if (formulaWidth >= available)
     return padding;
 
-  if (_inlineOverlay) return padding;
+  if (_inlineOverlay)
+    return padding;
   NSString *align = self.config.mathTextAlign;
   if ([align isEqualToString:@"left"])
     return padding;

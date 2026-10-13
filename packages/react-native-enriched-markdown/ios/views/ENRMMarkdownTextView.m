@@ -1,10 +1,10 @@
 #import "ENRMMarkdownTextView.h"
 #import "ENRMLinkPillAttachment.h"
 #import "ENRMLinkPillText.h"
+#import "ENRMMathOverlayManager.h"
 #import "ENRMTextHitTest.h"
 #import "LinkTapUtils.h"
 #import "PasteboardUtils.h"
-#import "ENRMMathOverlayManager.h"
 #import "TextViewLayoutManager.h"
 
 #if !TARGET_OS_OSX

@@ -18,12 +18,20 @@ class MathInlineSpan(
   internal val textColor: Int,
   override val displayMode: Boolean = false,
   private val onLatexError: LatexErrorReporter? = null,
-) : ReplacementSpan(), WidthAwareMathSpan, MathSourceSpan {
+) : ReplacementSpan(),
+  WidthAwareMathSpan,
+  MathSourceSpan {
   private var availableWidth = Int.MAX_VALUE
   override val latexSource get() = latex
+
   // The native scroll view covers the span only when its formula overflows.
   internal var overflowsLine = false
-  override fun naturalWidth(): Int { prepareResources(); return cachedWidth }
+
+  override fun naturalWidth(): Int {
+    prepareResources()
+    return cachedWidth
+  }
+
   override fun setAvailableWidth(width: Int): Boolean {
     val changed = availableWidth != width
     availableWidth = width
