@@ -8,6 +8,7 @@ import android.text.style.UnderlineSpan
 import com.swmansion.enriched.markdown.spans.BaseListSpan
 import com.swmansion.enriched.markdown.spans.BlockquoteSpan
 import com.swmansion.enriched.markdown.spans.CodeBlockSpan
+import com.swmansion.enriched.markdown.spans.CodePaddingSpan
 import com.swmansion.enriched.markdown.spans.CodeSpan
 import com.swmansion.enriched.markdown.spans.EmphasisSpan
 import com.swmansion.enriched.markdown.spans.HeadingSpan
@@ -753,6 +754,12 @@ object HTMLGenerator {
     styles: CachedStyles,
     isCodeBlock: Boolean,
   ) {
+    if (text.getSpans(start, end, CodePaddingSpan::class.java).any {
+        text.getSpanStart(it) <= start && text.getSpanEnd(it) >= end
+      }
+    ) {
+      return
+    }
     val strongSpans = text.getSpans(start, end, StrongSpan::class.java)
     val styleSpans = text.getSpans(start, end, StyleSpan::class.java)
     val emphasisSpans = text.getSpans(start, end, EmphasisSpan::class.java)
@@ -848,7 +855,11 @@ object HTMLGenerator {
       }
     }
 
-    escapeHTMLTo(html, content.trimEnd('\n'))
+    if (isCodeBlock) {
+      escapeHTMLTo(html, content.trimEnd('\n'))
+    } else {
+      escapeInlineHTMLTo(html, content.trimEnd('\n'))
+    }
 
     if (isUnderline && link == null) html.append("</u>")
     if (isStrikethrough) html.append("</s>")
@@ -1066,6 +1077,38 @@ object HTMLGenerator {
         '>' -> output.append("&gt;")
         '"' -> output.append("&quot;")
         '\'' -> output.append("&#39;")
+        else -> output.append(c)
+      }
+    }
+  }
+
+  private fun escapeInlineHTMLTo(
+    output: StringBuilder,
+    text: String,
+  ) {
+    val len = text.length
+
+    var needsEscape = false
+    for (i in 0 until len) {
+      val c = text[i]
+      if (c == '&' || c == '<' || c == '>' || c == '"' || c == '\'' || c == '\n' || c == '\r' || c == '\u2028' || c == '\u2029') {
+        needsEscape = true
+        break
+      }
+    }
+    if (!needsEscape) {
+      output.append(text)
+      return
+    }
+
+    for (i in 0 until len) {
+      when (val c = text[i]) {
+        '&' -> output.append("&amp;")
+        '<' -> output.append("&lt;")
+        '>' -> output.append("&gt;")
+        '"' -> output.append("&quot;")
+        '\'' -> output.append("&#39;")
+        '\n', '\r', '\u2028', '\u2029' -> output.append("<br>")
         else -> output.append(c)
       }
     }
