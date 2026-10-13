@@ -622,6 +622,11 @@ splitParagraphAroundDisplayMath(const std::vector<std::shared_ptr<MarkdownASTNod
 // Walk the document's top-level children and promote isolated display math out of its
 // parent Paragraph so the rendering layer sees it as a top-level block element.
 void promoteDisplayMathFromParagraphs(MarkdownASTNode &root) {
+  // Tables keep display formulas inside their cells so the table owns scrolling.
+  if (root.type == NodeType::Table)
+    return;
+  for (const auto &child : root.children)
+    promoteDisplayMathFromParagraphs(*child);
   auto &children = root.children;
 
   for (size_t i = 0; i < children.size();) {
@@ -637,6 +642,8 @@ void promoteDisplayMathFromParagraphs(MarkdownASTNode &root) {
       continue;
     }
 
+    for (auto &node : replacement)
+      if (node->type == NodeType::Paragraph) node->attributes = paragraph->attributes;
     auto position = children.erase(children.begin() + static_cast<NodeList::difference_type>(i));
     children.insert(position, replacement.begin(), replacement.end());
     i += replacement.size();
@@ -868,8 +875,8 @@ std::shared_ptr<MarkdownASTNode> MD4CParser::parse(const std::string &markdown, 
   impl_->flushText();
 
   if (impl_->root) {
-    promoteDisplayMathFromParagraphs(*impl_->root);
     wrapListItemInlineRuns(*impl_->root);
+    promoteDisplayMathFromParagraphs(*impl_->root);
     promoteVideosFromListItems(*impl_->root);
   }
 
