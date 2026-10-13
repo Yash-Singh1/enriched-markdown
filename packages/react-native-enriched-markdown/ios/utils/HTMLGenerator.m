@@ -546,12 +546,15 @@ static void generateInlineHTML(NSMutableString *html, NSAttributedString *attrib
                           } else if ([attachment isKindOfClass:[ENRMMathInlineAttachment class]]) {
                             ENRMMathInlineAttachment *math = (ENRMMathInlineAttachment *)attachment;
                             if (math.latex.length > 0) {
+                              NSString *delimiter = math.displayMode ? @"$$" : @"$";
+                              NSString *source =
+                                  [NSString stringWithFormat:@"%@%@%@", delimiter, math.latex, delimiter];
                               [html appendFormat:
                                         @"<code style=\"background-color: %@; color: %@; "
                                         @"padding: %.0fpx %.0fpx; border-radius: %.0fpx; "
                                         @"font-size: 1em; font-family: Menlo, Monaco, Consolas, monospace;\">%@</code>",
                                         styles.codeBackgroundColor, styles.codeColor, kCodePadding, kCodePadding * 2,
-                                        kCodeBorderRadius, escapeHTML(math.latex)];
+                                        kCodeBorderRadius, escapeHTML(source)];
                             }
 #endif
                           }

@@ -15,6 +15,7 @@ import com.swmansion.enriched.markdown.spans.HeadingSpan
 import com.swmansion.enriched.markdown.spans.HighlightSpan
 import com.swmansion.enriched.markdown.spans.ImageSpan
 import com.swmansion.enriched.markdown.spans.LinkSpan
+import com.swmansion.enriched.markdown.spans.MathSourceSpan
 import com.swmansion.enriched.markdown.spans.OrderedListSpan
 import com.swmansion.enriched.markdown.spans.StrikethroughSpan
 import com.swmansion.enriched.markdown.spans.StrongSpan
@@ -726,7 +727,7 @@ object HTMLGenerator {
       return
     }
 
-    val mathLatex = extractMathLatex(text, pos, pos + 1)
+    val mathLatex = extractMathSource(text, pos, pos + 1)
     if (mathLatex != null) {
       html
         .append("<code style=\"background-color: ")
@@ -1114,19 +1115,13 @@ object HTMLGenerator {
     }
   }
 
-  private fun extractMathLatex(
+  private fun extractMathSource(
     text: android.text.Spannable,
     start: Int,
     end: Int,
   ): String? {
-    return try {
-      val mathInlineSpanClass = Class.forName("com.swmansion.enriched.markdown.spans.MathInlineSpan")
-      val spans = text.getSpans(start, end, mathInlineSpanClass)
-      if (spans.isEmpty()) return null
-      val latexField = mathInlineSpanClass.getDeclaredField("latex").apply { isAccessible = true }
-      latexField.get(spans[0]) as? String
-    } catch (_: Exception) {
-      null
-    }
+    val math = text.getSpans(start, end, MathSourceSpan::class.java).firstOrNull() ?: return null
+    val delimiter = if (math.displayMode) "\$\$" else "\$"
+    return "$delimiter${math.latexSource}$delimiter"
   }
 }
