@@ -1,0 +1,93 @@
+{
+  "parser": {
+    "baseline": "76c5fb301d4c952e93c8f9a2be8919d6888555ba",
+    "candidate": "928da08e9b2a5d9d1e20eef0340555cc38af7e57",
+    "baseline_c_sha256": "f7bb15454184567b3faaf6727b2b53351ca96a4d07b76c56551f226423e41fef",
+    "candidate_c_sha256": "e95485e0e48e0cba09e89a497f4c7331646cc2ce98315f9d5181bba9e65a63a0"
+  },
+  "consumer": {
+    "baseline": "926ef06f0c73671467e6b99cbc293e37df091fb7",
+    "candidate": "069915d50dca665af629ee1da9cec11f7162f9b5"
+  },
+  "artifacts": {
+    "android-before.png": {
+      "sha256": "f8da286a91297226f1faa3cb4fd10e191ba7d9d8ccfd9b9275890195ad9b9d90",
+      "inspected": true
+    },
+    "android-after.png": {
+      "sha256": "82aa07f14d8a82647d517a4d7d33e4daacfc5f3c210efc790b1dd4f3b484e924",
+      "inspected": true
+    },
+    "ios-before.png": {
+      "sha256": "da34e65c2bcb97d9fa284cc47ebe9ba3f96d742e9c112f0b5d842dbe1124d190",
+      "inspected": true
+    },
+    "ios-after.png": {
+      "sha256": "47ffdf65725d8f08d7fd27a83b205dfd377bc32680aa771f5bea426daf349081",
+      "inspected": true
+    }
+  },
+  "validation": {
+    "parser_spec_examples": 1027,
+    "parser_pathological_cases": 36,
+    "math_spec_baseline": {
+      "passed": 29,
+      "failed": 11
+    },
+    "math_spec_candidate": {
+      "passed": 40,
+      "failed": 0
+    },
+    "android_parser_instrumentation": {
+      "tests": 21,
+      "failed": 0
+    },
+    "ios_native": {
+      "parser_tests": 18,
+      "latex_rendering_tests": 21,
+      "failed": 0
+    },
+    "cpp_golden_variants": 30,
+    "wasm_parity_variants": 12,
+    "maestro": {
+      "ios": 0,
+      "android": 0
+    },
+    "ios_maestro_limitation": "Normal navigation example exposed complete delimited-source fallback. Real RaTeX typesetting is independently verified by the root Math-screen screenshots and native renderer tests.",
+    "formatting": [
+      "git diff --check",
+      "strict C compiler",
+      "Kotlin ktlint",
+      "SwiftLint 0.65.0 on changed test file",
+      "YAML Prettier"
+    ],
+    "consumer_checks": [
+      "typecheck",
+      "lint (0 errors, one existing warning)",
+      "Docusaurus production build",
+      "consumer Git hooks"
+    ]
+  },
+  "devices": {
+    "ios": {
+      "name": "iPhone 17 Pro",
+      "os": "iOS 26.5",
+      "screenshot_pixels": [
+        402,
+        874
+      ],
+      "screenshot_scale": "agent-device @1x",
+      "font": "System text and bundled RaTeX KaTeX fonts; Custom math theme off"
+    },
+    "android": {
+      "avd": "T3MultilineEvidence",
+      "os": "Android 15 API 35",
+      "screenshot_pixels": [
+        1080,
+        2400
+      ],
+      "density": 420,
+      "font": "Unchanged native example CustomMarkdownStyle and bundled RaTeX KaTeX fonts"
+    }
+  }
+}

@@ -1,0 +1,100 @@
+diff --git a/apps/android-example/app/build.gradle b/apps/android-example/app/build.gradle
+index 0921a31b..ab2646dc 100644
+--- a/apps/android-example/app/build.gradle
++++ b/apps/android-example/app/build.gradle
+@@ -9,7 +9,7 @@ android {
+   compileSdk = rootProject.ext.compileSdkVersion
+ 
+   defaultConfig {
+-    applicationId = "swmansion.enriched.markdown.android.example"
++    applicationId = "swmansion.enriched.markdown.multiline"
+     minSdk = rootProject.ext.minSdkVersion
+     targetSdk = rootProject.ext.targetSdkVersion
+     versionCode = 1
+diff --git a/apps/android-example/app/src/main/java/swmansion/enriched/markdown/android/example/AndroidExampleMainActivity.kt b/apps/android-example/app/src/main/java/swmansion/enriched/markdown/android/example/AndroidExampleMainActivity.kt
+index beaba257..81c115a0 100644
+--- a/apps/android-example/app/src/main/java/swmansion/enriched/markdown/android/example/AndroidExampleMainActivity.kt
++++ b/apps/android-example/app/src/main/java/swmansion/enriched/markdown/android/example/AndroidExampleMainActivity.kt
+@@ -30,11 +30,7 @@ class AndroidExampleMainActivity : ComponentActivity() {
+     super.onCreate(savedInstanceState)
+     enableEdgeToEdge()
+ 
+-    val sampleMarkdown =
+-      resources
+-        .openRawResource(R.raw.sample_markdown)
+-        .bufferedReader()
+-        .use { it.readText() }
++    val sampleMarkdown = "# Multiline display math\n\nStandalone double-dollar equation:\n\n\$\$\na\n=\nb\n\$\$\n\nOrdinary heading\n---\n\nThis Markdown heading stays a heading.\n"
+ 
+     val materialShowcaseMarkdown =
+       resources
+@@ -43,7 +39,7 @@ class AndroidExampleMainActivity : ComponentActivity() {
+         .use { it.readText() }
+ 
+     setContent {
+-      var currentRoute by rememberSaveable { mutableStateOf(ExampleRoute.Home) }
++      var currentRoute by rememberSaveable { mutableStateOf(ExampleRoute.Text) }
+ 
+       MaterialTheme {
+         // Math and code highlighting ship as their own artifacts; this scope enables both for every
+diff --git a/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/EnrichedMarkdownExampleApp.swift b/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/EnrichedMarkdownExampleApp.swift
+index d4b8485b..929143be 100644
+--- a/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/EnrichedMarkdownExampleApp.swift
++++ b/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/EnrichedMarkdownExampleApp.swift
+@@ -8,7 +8,7 @@ struct EnrichedMarkdownExampleApp: App {
+ 
+     var body: some Scene {
+         WindowGroup {
+-            AppShell()
++            MathScreen().preferredColorScheme(.light)
+         }
+     }
+ }
+diff --git a/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/Views/Math/MathScreen.swift b/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/Views/Math/MathScreen.swift
+index 3dd13b76..3b50767e 100644
+--- a/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/Views/Math/MathScreen.swift
++++ b/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/Views/Math/MathScreen.swift
+@@ -3,33 +3,20 @@ import EnrichedMarkdownLaTeX
+ import SwiftUI
+ 
+ private let sampleMathMarkdown = #"""
+-# LaTeX Math
++# Multiline display math
+ 
+-Inline math flows with the text: the roots of $ax^2 + bx + c = 0$ are
+-$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$, and Euler's identity is $e^{i\pi} + 1 = 0$.
++Standalone double-dollar equation:
+ 
+-## Display math
++$$
++a
++=
++b
++$$
+ 
+-$$\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}$$
++Ordinary heading
++---
+ 
+-Sums work too:
+-
+-$$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$$
+-
+-A block wider than the line scrolls horizontally:
+-
+-$$f(x) = a_0 + \sum_{n=1}^{\infty} \left( a_n \cos\frac{n\pi x}{L} + b_n \sin\frac{n\pi x}{L} \right) + \int_0^1 \frac{\partial^2 u}{\partial t^2}\,dt$$
+-
+-## Inside other blocks
+-
+-> Blockquotes can carry $E = mc^2$ inline.
+-
+-- Pythagorean theorem: $a^2 + b^2 = c^2$
+-- Golden ratio: $\varphi = \frac{1+\sqrt{5}}{2}$
+-
+-## Fallback
+-
+-Source that fails to typeset falls back to plain text: $\frac{1}{$
++This Markdown heading stays a heading.
+ """#
+ 
+ /// Overrides `MarkdownTheme.latexDefault` (20pt, centered, quaternary panel)
