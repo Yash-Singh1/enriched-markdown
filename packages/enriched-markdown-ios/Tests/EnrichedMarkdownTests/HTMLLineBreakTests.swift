@@ -33,8 +33,11 @@ final class HTMLLineBreakTests: XCTestCase {
     }
 
     func testLiteralControlsAndAutolinks() {
-        let controls = ["\\<br>", "&lt;br&gt;", "`one<br>two`", "```html\none<br>two\n```",
-                        "one<br class=\"x\">two", "one<br title=\"<br>\">two", "text <!-- <br> -->", "one<br >two", "one<br  />two", "one<br/ >two", "one</br>two"]
+        let controls = [
+            "\\<br>", "&lt;br&gt;", "`one<br>two`", "```html\none<br>two\n```",
+            "one<br class=\"x\">two", "one<br title=\"<br>\">two", "text <!-- <br> -->",
+            "one<br >two", "one<br  />two", "one<br/ >two", "one</br>two"
+        ]
         for source in controls {
             XCTAssertTrue(Parser.shared.parseMarkdown(source).all(ofType: .lineBreak).isEmpty, source)
         }
