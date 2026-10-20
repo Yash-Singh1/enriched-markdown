@@ -13,6 +13,7 @@
  * Usage:
  *   node scripts/test-web-bundle.mjs
  */
+import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -25,7 +26,7 @@ const BUNDLE = join(
 const FIXTURES = join(REPO_ROOT, 'packages/core/cpp/tests/fixtures');
 const GOLDEN = join(REPO_ROOT, 'packages/core/cpp/tests/golden/ast.txt');
 
-// parseMarkdown() in md4c_wasm.cpp exposes eight of the parser's flags; isGFM
+// parseMarkdown() in md4c_wasm.cpp exposes nine of the parser's flags; isGFM
 // and permissiveAutolinks keep their Md4cFlags defaults (true). That reaches
 // two of the golden dump's five variants - the other three turn one of those
 // two off, so they cannot be reproduced through this entry point.
@@ -90,7 +91,7 @@ const module = await import(pathToFileURL(BUNDLE).href);
 const instance = await module.default();
 const parse = instance.cwrap('parseMarkdown', 'string', [
   'string',
-  ...Array(8).fill('number'),
+  ...Array(9).fill('number'),
 ]);
 
 console.log('==> Comparing its AST against the golden dump');
@@ -124,3 +125,25 @@ for (const fixture of fixtures) {
 console.log(`    ${compared} fixture/flag combinations match`);
 console.log();
 console.log('PASS');
+
+// Exercise the opt-in through the committed WASM ABI, including repeated parses.
+function count(node, type) {
+  return (
+    Number(node.type === type) +
+    (node.children ?? []).reduce((sum, child) => sum + count(child, type), 0)
+  );
+}
+const indented =
+  '    **Indented prose**\n\n```js\nconst fenced = true;\n```\n\n~~~\ntilde fence\n~~~';
+for (const noIndentedCodeBlocks of [0, 1, 0]) {
+  const ast = JSON.parse(
+    parse(indented, ...VARIANTS['defaults-gfm'], noIndentedCodeBlocks)
+  );
+  assert.equal(
+    count(ast, 'CodeBlock'),
+    noIndentedCodeBlocks ? 2 : 3,
+    'noIndentedCodeBlocks must leave fenced code intact'
+  );
+  assert.equal(count(ast, 'Strong'), noIndentedCodeBlocks);
+}
+console.log('PASS: optional indented code blocks in WASM');

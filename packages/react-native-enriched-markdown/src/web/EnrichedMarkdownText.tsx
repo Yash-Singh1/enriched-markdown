@@ -58,6 +58,7 @@ export const EnrichedMarkdownText = ({
     highlight = false,
     hardSoftBreaks = false,
     preserveBlankLines = false,
+    noIndentedCodeBlocks = false,
     admonitions = true,
   } = md4cFlags;
 
@@ -81,6 +82,7 @@ export const EnrichedMarkdownText = ({
         highlight,
         hardSoftBreaks,
         preserveBlankLines,
+        noIndentedCodeBlocks,
         admonitions,
       }),
       katexPromise,
@@ -125,6 +127,7 @@ export const EnrichedMarkdownText = ({
     highlight,
     hardSoftBreaks,
     preserveBlankLines,
+    noIndentedCodeBlocks,
     admonitions,
     textLinkKey,
     inlineCodeLinkKey,

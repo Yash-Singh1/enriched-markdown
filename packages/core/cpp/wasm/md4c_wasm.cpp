@@ -19,12 +19,14 @@ extern "C" {
  * @param subscript  1 → enable ~subscript~ spans; 0 → disable.
  * @param highlight  1 → enable ==highlight== spans; 0 → disable.
  * @param hardSoftBreaks 1 → treat soft breaks as hard breaks; 0 → collapse to space.
+ * @param noIndentedCodeBlocks 1 → disable indented code blocks; fenced code remains supported.
  * @param preserveBlankLines 1 → report runs of blank lines as BlankLine nodes; 0 → collapse them.
  * @param admonitions 1 → enable GitHub-style admonitions/alerts; 0 → disable.
  * @return           Null-terminated UTF-8 JSON string, valid until the next call.
  */
 const char *parseMarkdown(const char *markdown, int underline, int latexMath, int superscript, int subscript,
-                          int highlight, int hardSoftBreaks, int preserveBlankLines, int admonitions) {
+                          int highlight, int hardSoftBreaks, int preserveBlankLines, int admonitions,
+                          int noIndentedCodeBlocks) {
   if (!markdown) {
     g_resultBuffer = "{\"type\":\"Document\"}";
     return g_resultBuffer.c_str();
@@ -38,6 +40,7 @@ const char *parseMarkdown(const char *markdown, int underline, int latexMath, in
   flags.highlight = (highlight != 0);
   flags.hardSoftBreaks = (hardSoftBreaks != 0);
   flags.preserveBlankLines = (preserveBlankLines != 0);
+  flags.noIndentedCodeBlocks = (noIndentedCodeBlocks != 0);
   flags.admonitions = (admonitions != 0);
 
   Markdown::MD4CParser parser;
