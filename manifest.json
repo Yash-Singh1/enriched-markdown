@@ -1,0 +1,61 @@
+{
+  "feature": "alternate LaTeX delimiters",
+  "parser": {
+    "branch": "feat/latex-alternate-delimiters",
+    "baseline": "76c5fb301d4c952e93c8f9a2be8919d6888555ba",
+    "candidate": "cdf931f8d2ce4673829eaa69cc2fa90c1bcead09"
+  },
+  "consumer": {
+    "branch": "feat/latex-alternate-delimiters-integration",
+    "baseline": "926ef06f0c73671467e6b99cbc293e37df091fb7",
+    "candidate": "c37b5d3df4b5082c1413e73698ebff1b9af98f92"
+  },
+  "capture_date": "2026-10-20",
+  "ios": {
+    "device": "iPhone 17e",
+    "os": "iOS 26.5",
+    "viewport": "390x844 points",
+    "fonts": "system body and bundled KaTeX, unchanged between builds",
+    "capture": "agent-device, native app, 1x"
+  },
+  "android": {
+    "device": "T3LatexEvidence",
+    "os": "Android 15, API 35",
+    "viewport": "1080x2400 pixels, 420 dpi",
+    "fonts": "system body and RaTeX KaTeX, unchanged between builds",
+    "capture": "agent-device, native app"
+  },
+  "validation": {
+    "parser_spec_and_pathological": 1043,
+    "latex_spec": 25,
+    "latex_spec_baseline_failures": 13,
+    "ios_real_latex_rendering": 22,
+    "ios_parser": 18,
+    "android_jni_parser": 21,
+    "android_math_unit": 22,
+    "wasm_golden_combinations": 12,
+    "cpp_golden_combinations": 30,
+    "web_jest": 10,
+    "web_jest_baseline_failures": 2,
+    "maestro_ios": "pass",
+    "maestro_android": "pass"
+  },
+  "sha256": {
+    "ios-before.png": "16ed1949cfc59acd3311b86ce536c2b7e44c3523cb2a7b78ea723842d8039140",
+    "ios-after.png": "c4b47e65951f93e368cc6e01222bfddf9456ad660e268f03714107f1e0bc1710",
+    "fixture-ios.swift": "00fbdd268b933bdf7f17f87d44a4395d1c23db0e98a6066b8824d8a4e80e1aeb",
+    "android-after.png": "3fe23ef330fae3afc7c1569ce1de9d9d3e96c71108778918aa5135b87664a3e3",
+    "fixture.md": "2edac26c368132b75c93deb863b02cd50d6636a49c4ec5db30a11a84cd883c13",
+    "example-setup.patch": "8ebf3f470effd9bec2fecfdf4fa7b878eddb1a7981d3d26e8f652d5545450e15",
+    "fixture-android.kt": "fe493c872e10fbcf2065e24efe7192a7a67ac78392194f16ec19b9318afe77ee",
+    "android-before.png": "5946ec10cbbc4cf74ebab10eaf0d2fd3f5db81daec20a290c5c9520abe45c70e"
+  },
+  "candidate_sources": {
+    "enrmrkd.c": "4e4b2a9d0075e877e4494c2e6515a76c7e7220b7baaeb734b812a3ef6ff5c116",
+    "enrmrkd.h": "8e06ed28ce47e14844f71eeca904dee581ecaba6f0abfa2a8a5a957f0fc3a6ce"
+  },
+  "baseline_sources": {
+    "enrmrkd.c": "f7bb15454184567b3faaf6727b2b53351ca96a4d07b76c56551f226423e41fef",
+    "enrmrkd.h": "6e848e45e9ca53769963ac30c05dbbf7fe5961e34521cc2566888b24d91ed90f"
+  }
+}

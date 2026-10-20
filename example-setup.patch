@@ -1,0 +1,233 @@
+diff --git a/apps/android-example/app/build.gradle b/apps/android-example/app/build.gradle
+index 0921a31b..7331dd52 100644
+--- a/apps/android-example/app/build.gradle
++++ b/apps/android-example/app/build.gradle
+@@ -9,7 +9,7 @@ android {
+   compileSdk = rootProject.ext.compileSdkVersion
+ 
+   defaultConfig {
+-    applicationId = "swmansion.enriched.markdown.android.example"
++    applicationId = "swmansion.enriched.markdown.alternate"
+     minSdk = rootProject.ext.minSdkVersion
+     targetSdk = rootProject.ext.targetSdkVersion
+     versionCode = 1
+diff --git a/apps/android-example/app/src/main/java/swmansion/enriched/markdown/android/example/AndroidExampleMainActivity.kt b/apps/android-example/app/src/main/java/swmansion/enriched/markdown/android/example/AndroidExampleMainActivity.kt
+index beaba257..af5e7fc4 100644
+--- a/apps/android-example/app/src/main/java/swmansion/enriched/markdown/android/example/AndroidExampleMainActivity.kt
++++ b/apps/android-example/app/src/main/java/swmansion/enriched/markdown/android/example/AndroidExampleMainActivity.kt
+@@ -1,127 +1,47 @@
+ package swmansion.enriched.markdown.android.example
+ 
+ import android.os.Bundle
+-import android.widget.Toast
+ import androidx.activity.ComponentActivity
+ import androidx.activity.compose.setContent
+-import androidx.activity.enableEdgeToEdge
++import androidx.compose.foundation.background
+ import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.foundation.layout.padding
+-import androidx.compose.material3.ExperimentalMaterial3Api
++import androidx.compose.foundation.rememberScrollState
++import androidx.compose.foundation.verticalScroll
+ import androidx.compose.material3.MaterialTheme
+-import androidx.compose.material3.Scaffold
+-import androidx.compose.material3.Text
+-import androidx.compose.material3.TextButton
+-import androidx.compose.material3.TopAppBar
+-import androidx.compose.material3.TopAppBarDefaults
+-import androidx.compose.runtime.getValue
+-import androidx.compose.runtime.mutableStateOf
+-import androidx.compose.runtime.saveable.rememberSaveable
+-import androidx.compose.runtime.setValue
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.graphics.Color
+-import com.swmansion.enriched.markdown.codehighlight.CodeHighlightPlugin
+-import com.swmansion.enriched.markdown.compose.MarkdownPlugins
++import androidx.compose.ui.unit.dp
++import com.swmansion.enriched.markdown.compose.EnrichedMarkdownText
+ import com.swmansion.enriched.markdown.math.LatexMathPlugin
+ 
+ class AndroidExampleMainActivity : ComponentActivity() {
+-  @OptIn(ExperimentalMaterial3Api::class)
+   override fun onCreate(savedInstanceState: Bundle?) {
+     super.onCreate(savedInstanceState)
+-    enableEdgeToEdge()
++    setContent {
++      MaterialTheme {
++        EnrichedMarkdownText(
++          markdown = """
++# Alternate math delimiters
+ 
+-    val sampleMarkdown =
+-      resources
+-        .openRawResource(R.raw.sample_markdown)
+-        .bufferedReader()
+-        .use { it.readText() }
++Inline equation
+ 
+-    val materialShowcaseMarkdown =
+-      resources
+-        .openRawResource(R.raw.material_showcase)
+-        .bufferedReader()
+-        .use { it.readText() }
++Answer: \(x_1 + 1\).
+ 
+-    setContent {
+-      var currentRoute by rememberSaveable { mutableStateOf(ExampleRoute.Home) }
+-
+-      MaterialTheme {
+-        // Math and code highlighting ship as their own artifacts; this scope enables both for every
+-        // EnrichedMarkdownText below, and LatexMathPlugin also turns on `$...$` / `$$...$$` parsing.
+-        MarkdownPlugins(LatexMathPlugin, CodeHighlightPlugin) {
+-          Scaffold(
+-            modifier = Modifier.fillMaxSize(),
+-            containerColor = Color.White,
+-            topBar = {
+-              TopAppBar(
+-                title = {
+-                  Text(
+-                    when (currentRoute) {
+-                      ExampleRoute.Home -> "Enriched Markdown Examples"
+-                      ExampleRoute.Playground -> "Playground"
+-                      ExampleRoute.Text -> "Text"
+-                      ExampleRoute.MaterialTheme -> "Material Theme"
+-                      else -> currentRoute.name
+-                    },
+-                  )
+-                },
+-                navigationIcon = {
+-                  if (currentRoute != ExampleRoute.Home) {
+-                    TextButton(onClick = { currentRoute = ExampleRoute.Home }) {
+-                      Text("Back", color = Color(0xFF001A72))
+-                    }
+-                  }
+-                },
+-                colors =
+-                  TopAppBarDefaults.topAppBarColors(
+-                    containerColor = Color(0xFFBEEBD0),
+-                    titleContentColor = Color(0xFF001A72),
+-                    navigationIconContentColor = Color(0xFF001A72),
+-                  ),
+-              )
+-            },
+-          ) { innerPadding ->
+-            when (currentRoute) {
+-              ExampleRoute.Home ->
+-                HomeScreen(
+-                  modifier = Modifier.padding(innerPadding),
+-                  onNavigate = { route ->
+-                    when (route) {
+-                      ExampleRoute.Playground -> currentRoute = ExampleRoute.Playground
+-                      ExampleRoute.Text -> currentRoute = ExampleRoute.Text
+-                      ExampleRoute.MaterialTheme -> currentRoute = ExampleRoute.MaterialTheme
+-                      else ->
+-                        Toast
+-                          .makeText(
+-                            this@AndroidExampleMainActivity,
+-                            "${route.name} is not available on Android yet",
+-                            Toast.LENGTH_SHORT,
+-                          ).show()
+-                    }
+-                  },
+-                )
++Display equation
+ 
+-              ExampleRoute.Playground ->
+-                PlaygroundScreen(
+-                  modifier = Modifier.padding(innerPadding),
+-                )
++\[x^2 + y^2 = z^2\]
+ 
+-              ExampleRoute.Text ->
+-                TextScreen(
+-                  markdown = sampleMarkdown,
+-                  modifier = Modifier.padding(innerPadding),
+-                )
++Dollar math still works
+ 
+-              ExampleRoute.MaterialTheme ->
+-                MaterialThemeScreen(
+-                  markdown = materialShowcaseMarkdown,
+-                  modifier = Modifier.padding(innerPadding),
+-                )
++${'$'}u_1 + 1${'$'}
+ 
+-              else -> Unit
+-            }
+-          }
+-        }
++${'$'}${'$'}a^2 + b^2 = c^2${'$'}${'$'}
++          """.trimIndent(),
++          plugins = listOf(LatexMathPlugin),
++          modifier = Modifier.fillMaxSize().background(Color.White)
++            .verticalScroll(rememberScrollState()).padding(24.dp),
++        )
+       }
+     }
+   }
+diff --git a/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample.xcodeproj/project.pbxproj b/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample.xcodeproj/project.pbxproj
+index 7a3b2d84..82e86aba 100644
+--- a/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample.xcodeproj/project.pbxproj
++++ b/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample.xcodeproj/project.pbxproj
+@@ -412,7 +412,7 @@
+ 					"@executable_path/Frameworks",
+ 				);
+ 				MARKETING_VERSION = 1.0;
+-				PRODUCT_BUNDLE_IDENTIFIER = swmansion.enriched.markdown.ios.example;
++				PRODUCT_BUNDLE_IDENTIFIER = swmansion.enriched.markdown.alternate;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+@@ -436,7 +436,7 @@
+ 					"@executable_path/Frameworks",
+ 				);
+ 				MARKETING_VERSION = 1.0;
+-				PRODUCT_BUNDLE_IDENTIFIER = swmansion.enriched.markdown.ios.example;
++				PRODUCT_BUNDLE_IDENTIFIER = swmansion.enriched.markdown.alternate;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+diff --git a/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/EnrichedMarkdownExampleApp.swift b/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/EnrichedMarkdownExampleApp.swift
+index d4b8485b..2111243d 100644
+--- a/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/EnrichedMarkdownExampleApp.swift
++++ b/apps/ios-example/EnrichedMarkdownExample/EnrichedMarkdownExample/EnrichedMarkdownExampleApp.swift
+@@ -1,14 +1,34 @@
+ import SwiftUI
++import EnrichedMarkdown
++import EnrichedMarkdownLaTeX
+ 
+ @main
+ struct EnrichedMarkdownExampleApp: App {
+-    init() {
+-        ExampleFontRegistrar.registerBundledFonts()
+-    }
+-
+     var body: some Scene {
+         WindowGroup {
+-            AppShell()
++            ScrollView {
++                EnrichedMarkdownText(#"""
++# Alternate math delimiters
++
++Inline equation
++
++Answer: \(x_1 + 1\).
++
++Display equation
++
++\[x^2 + y^2 = z^2\]
++
++Dollar math still works
++
++$u_1 + 1$
++
++$$a^2 + b^2 = c^2$$
++"""#)
++                    .markdownLaTeX()
++                    .padding(24)
++            }
++            .background(Color.white)
++            .preferredColorScheme(.light)
+         }
+     }
+ }
