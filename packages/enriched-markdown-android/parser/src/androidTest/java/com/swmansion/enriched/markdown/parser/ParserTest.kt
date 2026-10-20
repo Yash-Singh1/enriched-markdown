@@ -13,6 +13,40 @@ class ParserTest {
   private val parser = Parser.shared
 
   @Test
+  fun standaloneMultilineDisplayMathHasPrecedenceOverSetext() {
+    for (underline in listOf("=", "---")) {
+      for (newline in listOf("\n", "\r", "\r\n")) {
+        val source = listOf("\$\$", "a", underline, "b", "\$\$").joinToString(newline)
+        for (markdown in listOf(source, "> " + source.replace(newline, newline + "> "), "- " + source.replace(newline, newline + "  "))) {
+          val ast = requireNotNull(parser.parseMarkdown(markdown, Md4cFlags(latexMath = true)))
+          assertEquals(markdown, 1, ast.allOfType(MarkdownASTNode.NodeType.LatexMathDisplay).size)
+          assertNull(markdown, ast.firstOfType(MarkdownASTNode.NodeType.Heading))
+        }
+      }
+    }
+  }
+
+  @Test
+  fun incompleteDisplayMathPreservesMarkdownAndCode() {
+    for (source in listOf(
+      "\$\$\na\n=\nb",
+      "\\\$\$\na\n=\nb\n\$\$",
+      "\$\$\na\n\n=\nb\n\$\$",
+      "    \$\$\n    a\n    =\n    b\n    \$\$",
+      "```\n\$\$\na\n=\nb\n\$\$\n```",
+      "prose `\n\$\$\na\n=\nb\n\$\$\nend`",
+    )) {
+      val ast = requireNotNull(parser.parseMarkdown(source, Md4cFlags(latexMath = true)))
+      assertNull(source, ast.firstOfType(MarkdownASTNode.NodeType.LatexMathDisplay))
+    }
+    val ast = requireNotNull(parser.parseMarkdown("\$\$\na\n=\nb\n\$\$\nTitle\n---", Md4cFlags(latexMath = true)))
+    assertEquals(1, ast.allOfType(MarkdownASTNode.NodeType.LatexMathDisplay).size)
+    assertEquals(1, ast.allOfType(MarkdownASTNode.NodeType.Heading).size)
+    val disabled = requireNotNull(parser.parseMarkdown("\$\$\na\n=\nb\n\$\$"))
+    assertNotNull(disabled.firstOfType(MarkdownASTNode.NodeType.Heading))
+  }
+
+  @Test
   fun blankInputReturnsNull() {
     assertNull(parser.parseMarkdown(""))
     assertNull(parser.parseMarkdown("   "))

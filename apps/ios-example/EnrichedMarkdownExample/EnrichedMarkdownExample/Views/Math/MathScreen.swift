@@ -5,6 +5,21 @@ import SwiftUI
 private let sampleMathMarkdown = #"""
 # LaTeX Math
 
+$$
+a
+=
+b
+$$
+
+$$
+c
+---
+d
+$$
+
+Ordinary heading
+---
+
 Inline math flows with the text: the roots of $ax^2 + bx + c = 0$ are
 $x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$, and Euler's identity is $e^{i\pi} + 1 = 0$.
 

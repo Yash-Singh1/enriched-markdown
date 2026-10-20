@@ -223,6 +223,42 @@ final class LaTeXRenderingTests: XCTestCase {
 
     // MARK: - Copy as Markdown integration
 
+    func testStandaloneMultilineDisplayMathHasPrecedenceOverSetext() {
+        for underline in ["=", "---"] {
+            for newline in ["\n", "\r", "\r\n"] {
+                let source = ["$$", "a", underline, "b", "$$"].joined(separator: newline)
+                for markdown in [source, "> " + source.replacingOccurrences(of: newline, with: newline + "> "),
+                                 "- " + source.replacingOccurrences(of: newline, with: newline + "  ")] {
+                    let ast = Parser.shared.parseMarkdown(markdown, options: effectiveParsingOptions)
+                    XCTAssertEqual(ast.all(ofType: .latexMathDisplay).count, 1, markdown)
+                    XCTAssertNil(ast.first(ofType: .heading), markdown)
+                    let rendered = MarkdownRenderer.render(
+                        markdown, config: config, options: .commonMark,
+                        imageRequestHeaders: [:], plugins: [LaTeXRenderPlugin()]
+                    )
+                    let attachments = mathAttachments(in: rendered)
+                    XCTAssertEqual(attachments.count, 1, markdown)
+                    XCTAssertEqual(attachments.first?.isDisplay, true, markdown)
+                }
+            }
+        }
+    }
+
+    func testIncompleteDisplayMathPreservesMarkdownAndCode() {
+        for source in ["$$\na\n=\nb", "\\$$\na\n=\nb\n$$",
+                       "$$\na\n\n=\nb\n$$", "    $$\n    a\n    =\n    b\n    $$",
+                       "```\n$$\na\n=\nb\n$$\n```", "prose `\n$$\na\n=\nb\n$$\nend`"] {
+            let ast = Parser.shared.parseMarkdown(source, options: effectiveParsingOptions)
+            XCTAssertNil(ast.first(ofType: .latexMathDisplay), source)
+        }
+        let source = "$$\na\n=\nb\n$$\nTitle\n---"
+        let ast = Parser.shared.parseMarkdown(source, options: effectiveParsingOptions)
+        XCTAssertEqual(ast.all(ofType: .latexMathDisplay).count, 1)
+        XCTAssertEqual(ast.all(ofType: .heading).count, 1)
+        let disabled = Parser.shared.parseMarkdown("$$\na\n=\nb\n$$")
+        XCTAssertNotNil(disabled.first(ofType: .heading))
+    }
+
     func testPartialSelectionWithInlineMathCopiesVerbatim() {
         XCTAssertEqual(
             copyMarkdown(selecting: "before \u{FFFC} and", in: "before $x^2$ and more text after"),

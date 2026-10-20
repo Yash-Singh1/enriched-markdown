@@ -66,6 +66,22 @@ Block equations render as standalone display elements with their own spacing and
 LaTeX commands use backslashes (`\frac`, `\alpha`). In regular JS strings and template literals a backslash is an escape character, so either double every backslash (`\\frac`, as the example above does) or wrap the string in `String.raw`. Block math (`$$...$$`) must be on its own line to render as a display element.
 :::
 
+A multiline display equation can start a paragraph with `$$` on its own line.
+A matching standalone `$$` before a blank line keeps formula lines such as `=`
+and `---` inside the equation, including in lists and blockquotes. Use at most
+three spaces of indentation for each delimiter, after any list or blockquote
+prefix. An incomplete pair retains ordinary Markdown parsing until the closer
+arrives. Dollar lines in an existing prose paragraph keep the inline parsing
+rules; separate a display equation from preceding prose with a blank line.
+
+```markdown
+$$
+a
+=
+b
+$$
+```
+
 ## Handling render errors {#handling-render-errors}
 
 When the engine cannot draw a formula - an unsupported command, a syntax error -

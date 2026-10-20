@@ -1,0 +1,16 @@
+appId: swmansion.enriched.markdown.ios.example
+tags:
+  - block
+  - math
+  - text
+---
+- launchApp:
+    clearState: true
+
+- tapOn:
+    id: home-block-math
+
+# The complete equation must survive in math or its delimited-source fallback.
+- assertVisible: 'Math: a equals b|\$\$ a = b \$\$'
+- assertVisible: 'Math: c minus minus minus d|\$\$ c --- d \$\$'
+- assertVisible: '.*Ordinary heading.*'

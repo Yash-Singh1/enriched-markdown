@@ -1,0 +1,34 @@
+appId: swmansion.enriched.markdown.android.example
+tags:
+  - block
+  - math
+  - text
+---
+- launchApp:
+    clearState: true
+
+- runFlow:
+    file: '../../../../subflows/move_to_playground.yaml'
+
+- runFlow:
+    file: '../../../subflows/set_enriched_text_value.yaml'
+    env:
+      VALUE: |
+        $$
+        a
+        =
+        b
+        $$
+
+        $$
+        c
+        ---
+        d
+        $$
+
+        Heading control
+        ---
+
+- assertVisible: '.*Math:.*a.*b.*'
+- assertVisible: '.*Math:.*c.*d.*'
+- assertVisible: '.*Heading control.*'
