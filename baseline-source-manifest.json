@@ -1,0 +1,30 @@
+{
+  "base": "926ef06f0c73671467e6b99cbc293e37df091fb7",
+  "files": [
+    {
+      "path": "packages/react-native-enriched-markdown/android/src/main/java/com/swmansion/enriched/markdown/segments/TableContainerView.kt",
+      "sha256": "87a0b672e4c9a8c96ac3ebf7b3830213bb34371609fd2f66f681bd52a684515b",
+      "gitBlob": "9a98addf8ab46be03504654ed9e5fce0c5d51fd1"
+    },
+    {
+      "path": "packages/react-native-enriched-markdown/android/src/main/java/com/swmansion/enriched/markdown/utils/common/serialization/MarkdownASTSerializer.kt",
+      "sha256": "492dc22299790d7a89e7a9541c6164a6b51f015f06f5000dfdca2aa38779ce0f",
+      "gitBlob": "66ea56c4fa9ebd5ece6ba844214bffb4157073d2"
+    },
+    {
+      "path": "packages/react-native-enriched-markdown/ios/segments/TableContainerView.m",
+      "sha256": "53692e3afcc857f3983582ad542fdf3a181b616a795775f16ec675eaf0a0a644",
+      "gitBlob": "987eb211e8fb730e7492b0b766f4dad6341a4655"
+    },
+    {
+      "path": "packages/react-native-enriched-markdown/ios/utils/MarkdownASTSerializer.m",
+      "sha256": "48ef1934b5a2c99757147dd0fdbe3291e6a38f62dd0ce7e1f187245f007a0745",
+      "gitBlob": "ffdee1a5e8d3f418fb4df213d08842b78c47fe6b"
+    },
+    {
+      "path": "packages/react-native-enriched-markdown/ios/utils/MarkdownASTSerializer.h",
+      "sha256": "b1e298e0fc412e0a89cce508ad586aa4ef5e7f9f6905ef948f63e2bec253ff6d",
+      "gitBlob": "b9519a3a464e339ddb85fa7ab72a2a76693ae0b3"
+    }
+  ]
+}

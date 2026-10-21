@@ -1,0 +1,58 @@
+{
+  "base": "926ef06f0c73671467e6b99cbc293e37df091fb7",
+  "branch": "fix/table-cell-copy-line-breaks",
+  "files": [
+    {
+      "path": "packages/react-native-enriched-markdown/android/src/main/java/com/swmansion/enriched/markdown/segments/TableContainerView.kt",
+      "sha256": "ad9b1e4de4b8f6f347aca78fffc2765c2b0976094ca5ed0ee13c73b1a658f059",
+      "gitBlob": "1e7a5d50b0d06a5838d9d4625202c6a253de1369"
+    },
+    {
+      "path": "packages/react-native-enriched-markdown/android/src/main/java/com/swmansion/enriched/markdown/utils/common/serialization/MarkdownASTSerializer.kt",
+      "sha256": "d07690def469a10a9726f236f3994e89b88b68147eab126514150597490a4bec",
+      "gitBlob": "1af36c5e3c904bd86812de94bdc7d6e372273da0"
+    },
+    {
+      "path": "packages/react-native-enriched-markdown/ios/segments/TableContainerView.m",
+      "sha256": "8a5a1d1f7369077ebd61294794a4877f90f88d886dde5c935c36137c4f8a419d",
+      "gitBlob": "a8f8dd37675bba4f413c4f02316748d628ca2771"
+    },
+    {
+      "path": "packages/react-native-enriched-markdown/ios/utils/MarkdownASTSerializer.m",
+      "sha256": "9e4ee922da4a587fe5f7225cbb7f32fe1a78db94ae4d6804db140a2c043ddf84",
+      "gitBlob": "0394bb25d2b3258a1efcd544dd96eb7f4b11671c"
+    },
+    {
+      "path": "packages/react-native-enriched-markdown/ios/utils/MarkdownASTSerializer.h",
+      "sha256": "269d03bd97821ba56652c4ac1d67b015816b04945f40fd99f2004f778e7a493c",
+      "gitBlob": "3f6793efac4df86069f5287637c8c1452dc78df6"
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "ios-before.png",
+      "width": 1206,
+      "height": 2622,
+      "sha256": "dbe8be0ae3d586ddd6cc9860a4e5970d8d448c5c82367fcec825d834a15baf2a"
+    },
+    {
+      "name": "ios-after.png",
+      "width": 1206,
+      "height": 2622,
+      "sha256": "c7cb51482f4d6c756d00bf0f2c2682d9cf93ea4ace0902f578e2985df147d0e8"
+    },
+    {
+      "name": "android-before.png",
+      "width": 1080,
+      "height": 2400,
+      "sha256": "5edb4e58ceb40a295590d3d9045a2c9be89c08500055557138fb81e24d0bbe0f"
+    },
+    {
+      "name": "android-after.png",
+      "width": 1080,
+      "height": 2400,
+      "sha256": "5ff56702caa43a91f0b3d6ff66e0d4d4a5d6b7f7282754b4efc0ba2dec74425c"
+    }
+  ],
+  "head": "9c29d07c6e224f534299e62f83916873d2d4580c"
+}
