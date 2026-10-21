@@ -1,0 +1,90 @@
+[
+  {
+    "path": "packages/core/cpp/parser/MD4CParser.cpp",
+    "sha256": "5a4d2040a665d2b93ddab5d17ca1e914a6aa2ce3fb8600decad36a5829a33fa5"
+  },
+  {
+    "path": "packages/core/cpp/parser/MD4CParser.hpp",
+    "sha256": "8bd568096b34b580bd238370c8159e716d3b443d150521f9d3e964d52f754972"
+  },
+  {
+    "path": "packages/core/cpp/wasm/md4c_wasm.cpp",
+    "sha256": "d6734482c84180eaf5fdd6977f4ebcecf09acdd82398791b56bebe775931b53e"
+  },
+  {
+    "path": "packages/enriched-markdown-android/parser/src/main/cpp/jni/ParserJni.cpp",
+    "sha256": "b3b9631349d708273eeed8841a4dd16dd0c353a42a88442b411567b0daf6f031"
+  },
+  {
+    "path": "packages/enriched-markdown-android/parser/src/main/java/com/swmansion/enriched/markdown/parser/Parser.kt",
+    "sha256": "10eb9f72c592c8ef6849fc234ea652efe45a130c8fb2dd839e1f9b94aca80712"
+  },
+  {
+    "path": "packages/enriched-markdown-android/ui/src/main/java/com/swmansion/enriched/markdown/MarkdownOptions.kt",
+    "sha256": "5f6f6280fca7c5a3ba629c69b3d053c34fc31a23f8cf635de519491a80bc8371"
+  },
+  {
+    "path": "packages/enriched-markdown-ios/Sources/EnrichedMarkdown/Parser/MarkdownParserBridge.swift",
+    "sha256": "11643c5c1ce469979a5954809fa9068e2d39e8c44427362a937905ecca399261"
+  },
+  {
+    "path": "packages/enriched-markdown-ios/Sources/EnrichedMarkdown/Parser/MarkdownParsingOptions.swift",
+    "sha256": "03757846439653647a3b395bfce3aa5bc3217a8b762e7cc64ed7c503b3e22e1a"
+  },
+  {
+    "path": "packages/enriched-markdown-ios/cpp/SwiftParserCAPI.h",
+    "sha256": "dfae6d969f6eef49be27ab19aa30d270143bac6995b2ccaf8e778f4a64bcf4c7"
+  },
+  {
+    "path": "packages/enriched-markdown-ios/cpp/SwiftParserShim.cpp",
+    "sha256": "78f7427958a844acbcf764dac8a38c9f313a18e0f2254fc36e5ea55d3462a70c"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/android/src/main/cpp/jni-adapter.cpp",
+    "sha256": "f434e421b9ee4fe04ee71e13441c8c2ee6fa7263f74a8580722ec206627032ad"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/android/src/main/java/com/swmansion/enriched/markdown/MeasurementStore.kt",
+    "sha256": "18fcbbca914604480dc5c23ceede2f822eae28819af9629019ba57feb7005ebb"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/android/src/main/java/com/swmansion/enriched/markdown/parser/Parser.kt",
+    "sha256": "7028b101f5805ceacf49ec7d99885e951b6de448e776b1caa0a4ac8576289781"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/android/src/main/java/com/swmansion/enriched/markdown/utils/common/MarkdownViewManagerUtils.kt",
+    "sha256": "41a86bdacbd21e280581325e0dbfc4573da56b1c8d0bbc0015643ca410716bbe"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/ios/EnrichedMarkdown.mm",
+    "sha256": "3adfa141db1595cea84a13d98334759cb37e72f369669399519407889e1a0efb"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/ios/EnrichedMarkdownText.mm",
+    "sha256": "a3c9397453549fc10675615a782da254ce4fe4060045f061e61a73c852c3596c"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/ios/internals/ENRMViewFreeMeasurement.h",
+    "sha256": "dfeedb8ad42c826d1b0180f254e43a4b4b42f657da46e243f2f860039e81f76f"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/ios/internals/MeasurementCache.h",
+    "sha256": "cd56c47159353e812b991487be652a57f5e76b05068523e2ca14d64402ed884f"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/ios/internals/ShadowMeasurementUtils.h",
+    "sha256": "4af6a6e9fdd485c519fcb6d824d5b005cafb631347d12faa1b09dcbbc93f05e4"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/ios/parser/ENRMMarkdownParser.h",
+    "sha256": "84067f0bcb820d82f487ef5eecbdaca78b3ed34b92dbab1238d47618c13eb877"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/ios/parser/ENRMMarkdownParser.mm",
+    "sha256": "8508bfaeebf0e17f676b4769ea415ed7bd302ec757164b09c615c463c7c47999"
+  },
+  {
+    "path": "packages/react-native-enriched-markdown/ios/parser/MarkdownParserBridge.mm",
+    "sha256": "e40bc6adb5fa910a89d7a92285d1d60f2a23c7cbbfe815d6b405e693e11be0a7"
+  }
+]
