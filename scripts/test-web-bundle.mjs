@@ -26,15 +26,16 @@ const BUNDLE = join(
 const FIXTURES = join(REPO_ROOT, 'packages/core/cpp/tests/fixtures');
 const GOLDEN = join(REPO_ROOT, 'packages/core/cpp/tests/golden/ast.txt');
 
-// parseMarkdown() in md4c_wasm.cpp exposes nine of the parser's flags; isGFM
-// and permissiveAutolinks keep their Md4cFlags defaults (true). That reaches
-// two of the golden dump's five variants - the other three turn one of those
-// two off, so they cannot be reproduced through this entry point.
+// parseMarkdown() in md4c_wasm.cpp exposes ten of the parser's flags; isGFM
+// keeps its default (true). That reaches the golden dump's three -gfm
+// variants - the two -commonmark ones turn isGFM off, so they cannot be
+// reproduced through this entry point.
 const VARIANTS = {
   // underline, latexMath, superscript, subscript, highlight, hardSoftBreaks,
-  // preserveBlankLines, admonitions
-  'defaults-gfm': [0, 1, 0, 0, 0, 0, 0, 1],
-  'extensions-on-gfm': [1, 1, 1, 1, 1, 1, 1, 1],
+  // preserveBlankLines, admonitions, permissiveAutolinks, noIndentedCodeBlocks
+  'defaults-gfm': [0, 1, 0, 0, 0, 0, 0, 1, 1, 0],
+  'extensions-off-gfm': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  'extensions-on-gfm': [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
 };
 
 function readGolden() {
@@ -91,7 +92,7 @@ const module = await import(pathToFileURL(BUNDLE).href);
 const instance = await module.default();
 const parse = instance.cwrap('parseMarkdown', 'string', [
   'string',
-  ...Array(9).fill('number'),
+  ...Array(10).fill('number'),
 ]);
 
 console.log('==> Comparing its AST against the golden dump');
@@ -137,7 +138,11 @@ const indented =
   '    **Indented prose**\n\n```js\nconst fenced = true;\n```\n\n~~~\ntilde fence\n~~~';
 for (const noIndentedCodeBlocks of [0, 1, 0]) {
   const ast = JSON.parse(
-    parse(indented, ...VARIANTS['defaults-gfm'], noIndentedCodeBlocks)
+    parse(
+      indented,
+      ...VARIANTS['defaults-gfm'].slice(0, -1),
+      noIndentedCodeBlocks
+    )
   );
   assert.equal(
     count(ast, 'CodeBlock'),

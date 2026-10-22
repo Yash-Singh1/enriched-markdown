@@ -19,14 +19,15 @@ extern "C" {
  * @param subscript  1 → enable ~subscript~ spans; 0 → disable.
  * @param highlight  1 → enable ==highlight== spans; 0 → disable.
  * @param hardSoftBreaks 1 → treat soft breaks as hard breaks; 0 → collapse to space.
- * @param noIndentedCodeBlocks 1 → disable indented code blocks; fenced code remains supported.
  * @param preserveBlankLines 1 → report runs of blank lines as BlankLine nodes; 0 → collapse them.
  * @param admonitions 1 → enable GitHub-style admonitions/alerts; 0 → disable.
+ * @param permissiveAutolinks 1 → autolink bare URLs/e-mails; 0 → explicit links only.
+ * @param noIndentedCodeBlocks 1 → disable indented code blocks; fenced code remains supported.
  * @return           Null-terminated UTF-8 JSON string, valid until the next call.
  */
 const char *parseMarkdown(const char *markdown, int underline, int latexMath, int superscript, int subscript,
                           int highlight, int hardSoftBreaks, int preserveBlankLines, int admonitions,
-                          int noIndentedCodeBlocks) {
+                          int permissiveAutolinks, int noIndentedCodeBlocks) {
   if (!markdown) {
     g_resultBuffer = "{\"type\":\"Document\"}";
     return g_resultBuffer.c_str();
@@ -42,6 +43,7 @@ const char *parseMarkdown(const char *markdown, int underline, int latexMath, in
   flags.preserveBlankLines = (preserveBlankLines != 0);
   flags.noIndentedCodeBlocks = (noIndentedCodeBlocks != 0);
   flags.admonitions = (admonitions != 0);
+  flags.permissiveAutolinks = (permissiveAutolinks != 0);
 
   Markdown::MD4CParser parser;
   auto root = parser.parse(std::string(markdown), flags);
