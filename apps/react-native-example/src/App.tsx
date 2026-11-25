@@ -1,59 +1,30 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { Stack } from './navigation/Stack';
-import HomeScreen from './screens/home/HomeScreen';
-import PlaygroundScreen from './screens/playground/PlaygroundScreen';
-import TextScreen from './screens/text/TextScreen';
-import InputScreen from './screens/input/InputScreen';
-import StreamingMarkdownSimulator from './screens/streaming/StreamingMarkdownSimulator';
-import StorybookScreen from './screens/storybook/StorybookScreen';
-
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#BEEBD0',
-          },
-          headerTintColor: '#001A72',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-          headerBackButtonDisplayMode: 'minimal',
-        }}
-      >
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: 'Enriched Markdown Examples' }}
-        />
-        <Stack.Screen
-          name="Playground"
-          component={PlaygroundScreen}
-          options={{ title: 'Playground' }}
-        />
-        <Stack.Screen
-          name="Text"
-          component={TextScreen}
-          options={{ title: 'Text' }}
-        />
-        <Stack.Screen
-          name="Input"
-          component={InputScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Stream"
-          component={StreamingMarkdownSimulator}
-          options={{ title: 'Stream' }}
-        />
-        <Stack.Screen
-          name="Storybook"
-          component={StorybookScreen}
-          options={{ title: 'Storybook' }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
+import React, {useEffect, useState} from 'react';
+import {View, Text, ScrollView, Pressable, NativeModules, Platform, StyleSheet} from 'react-native';
+import {EnrichedMarkdownText} from 'react-native-enriched-markdown';
+import {normalizeMarkdownStyle} from '../../../packages/react-native-enriched-markdown/src/normalizeMarkdownStyle';
+const probe=NativeModules.ReproProbe;
+const mdStyle={paragraph:{fontSize:19,lineHeight:28,color:'#172033',marginTop:0,marginBottom:0}};
+const normalized=normalizeMarkdownStyle(mdStyle);
+const cases=[['991','Hard-break sizing'],['994','Character references'],['995','Clipboard exports']];
+const Box=({title,children}:any)=><View style={s.card}><Text style={s.label}>{title}</Text>{children}</View>;
+const Markdown=({source,...props}:any)=><EnrichedMarkdownText markdown={source} markdownStyle={mdStyle} {...props}/>;
+function WidthCase(){const [width,setWidth]=useState(0);return <>
+<Text style={s.title}>Explicit breaks should fit the text</Text>
+<Text style={s.body}>Same two short words, explicit Markdown line break. The outline allows 300 pt. Blue is the measured native view.</Text>
+<Box title={'Source: "one  \\ntwo"'}><View style={{width:300,borderColor:'#c28a10',borderWidth:2,alignItems:'flex-start'}}><Markdown source={'one  \ntwo'} containerStyle={{maxWidth:300,alignSelf:'flex-start',backgroundColor:'#b8ddff'}} onLayout={(e:any)=>setWidth(e.nativeEvent.layout.width)}/></View><Text style={s.result}>Native onLayout width: {width.toFixed(1)} pt</Text></Box>
+<Box title="Soft wrapping control"><View style={{width:300,borderColor:'#c28a10',borderWidth:2,alignItems:'flex-start'}}><Markdown source="This sentence is long enough to wrap naturally across more than one line inside this container." containerStyle={{maxWidth:300,backgroundColor:'#b8ddff'}}/></View></Box>
+<Text style={s.note}>{Platform.OS==='android'?'Android regression control. PR #991 changes iOS only.':'Expected: explicit breaks keep a tight width; naturally wrapped paragraphs keep the available width.'}</Text>
+</>}
+function EntityCase(){return <><Text style={s.title}>Character references survive parsing</Text>
+<Box title="Named references"><Text style={s.code}>{'&amp; &copy; &eacute; &alpha; &NotEqualTilde;'}</Text><Markdown source={'Symbols: &amp; &copy; &eacute; &alpha; &NotEqualTilde;'}/></Box>
+<Box title="Decimal and hexadecimal references"><Text style={s.code}>{'&#91;1&#93; &#x1F600; &#945;'}</Text><Markdown source={'Numeric: &#91;1&#93; &#x1F600; &#945;'}/></Box>
+<Box title="Decoded text must not become a citation"><Text style={s.code}>{'&#91;1&#93; stays text\n\n[1]: https://example.com'}</Text><Markdown source={'&#91;1&#93; stays text\n\n[1]: https://example.com'}/></Box>
+<Box title="Code remains literal"><Markdown source={'`&amp;` and `&#x1F600;`'}/></Box></>}
+function ClipboardCase(){const [result,setResult]=useState<any>(null);const [kind,setKind]=useState('breaks');useEffect(()=>{probe.run(normalized,kind).then(setResult).catch((e:any)=>setResult({error:String(e)}))},[kind]);return <><Text style={s.title}>Native clipboard round trips</Text>
+<View style={s.tabs}>{[['breaks','Cell breaks'],['markdown','Table Markdown']].map(([id,label])=><Pressable key={id} accessibilityRole="button" onPress={()=>setKind(id)} style={[s.tab,kind===id&&s.active]}><Text style={s.tabtext}>{label}</Text></Pressable>)}</View>
+<Text style={s.body}>Direct native exporter fixture. Uses the library's real attachments, table-cell data and AST, then writes and reads the system clipboard.</Text>
+{kind==='formula'?<Box title="Source formula"><Markdown source={'$x_1$'}/><Text style={s.note}>Inline math attachment: x_1</Text></Box>:kind==='breaks'?<Box title="Source native table cell"><Text style={s.code}>{'first\\nsecond'}</Text><Text style={s.note}>A native attributed cell with an actual line feed. HTML import should preserve two lines.</Text></Box>:<Box title="Source table-cell AST"><Text style={s.code}>TableCell → LatexMathInline → x_1</Text></Box>}
+{result?<><Box title={kind==='markdown'?'Actual copied Markdown':'Clipboard HTML, style attributes hidden'}><Text selectable style={s.code}>{result.error||result.payload.replace(/ style="[^"]*"/g,'')}</Text></Box>{kind!=='markdown'?<Box title="Read clipboard HTML, import with the platform HTML reader"><Text style={s.pasted}>{result.pasted || '(empty)'}</Text></Box>:<Box title="Render the copied Markdown"><Markdown source={result.payload}/></Box>}<Text style={s.result}>{result.summary}</Text></>:<Text>Running native exporter…</Text>}
+</>}
+export default function App(){const [id,setId]=useState('991');return <View style={s.app}><Text style={s.eyebrow}>ENRICHED MARKDOWN / UPSTREAM REPRO</Text><Text style={s.revision}>{Platform.OS} · native {probe?.revision||'probe missing'}</Text><View style={s.tabs}>{cases.map(([key,label])=><Pressable key={key} accessibilityRole="button" onPress={()=>setId(key)} style={[s.tab,id===key&&s.active]}><Text style={s.tabtext}>#{key}</Text><Text style={{fontSize:11,color:'#35445e'}}>{label}</Text></Pressable>)}</View><ScrollView contentContainerStyle={{paddingBottom:45}}>{id==='991'?<WidthCase/>:id==='994'?<EntityCase/>:<ClipboardCase/>}</ScrollView></View>}
+const s=StyleSheet.create({app:{flex:1,paddingTop:Platform.OS==='ios'?65:34,paddingHorizontal:18,backgroundColor:'#f3f5f9'},eyebrow:{fontSize:11,fontWeight:'700',color:'#4a5b75',letterSpacing:1},revision:{fontSize:13,color:'#4a5b75',marginVertical:10},title:{fontSize:23,fontWeight:'700',color:'#15233b',marginBottom:12},body:{fontSize:15,lineHeight:21,color:'#47566c',marginBottom:14},tabs:{flexDirection:'row',gap:6,marginBottom:17},tab:{flex:1,backgroundColor:'#e0e6ee',padding:9,borderRadius:8},active:{backgroundColor:'#b9d8fc',borderColor:'#2867b0',borderWidth:1},tabtext:{fontWeight:'700',color:'#173b6b',fontSize:13},card:{backgroundColor:'white',borderRadius:10,padding:13,marginBottom:13,borderWidth:1,borderColor:'#d7dee9'},label:{fontSize:13,fontWeight:'600',color:'#47566c',marginBottom:10},code:{fontFamily:Platform.OS==='ios'?'Menlo':'monospace',fontSize:14,lineHeight:21,color:'#163b62',marginBottom:10},result:{fontSize:15,fontWeight:'600',color:'#15233b',marginTop:10},note:{fontSize:13,lineHeight:19,color:'#59677a',marginTop:9},pasted:{fontSize:21,lineHeight:29,color:'#172033',backgroundColor:'#eef5fc',padding:10}});

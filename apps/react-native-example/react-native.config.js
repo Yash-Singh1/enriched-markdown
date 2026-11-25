@@ -1,25 +1,8 @@
 const path = require('path');
-const pkg = require('../../packages/react-native-enriched-markdown/package.json');
-
-module.exports = {
-  project: {
-    ios: {
-      automaticPodsInstallation: true,
-    },
-  },
-  assets: ['./assets/fonts'],
-  dependencies: {
-    [pkg.name]: {
-      root: path.join(
-        __dirname,
-        '../../packages/react-native-enriched-markdown'
-      ),
-      platforms: {
-        // Codegen script incorrectly fails without this
-        // So we explicitly specify the platforms with empty object
-        ios: {},
-        android: {},
-      },
-    },
-  },
-};
+const fs = require('fs');
+const dependencies = {};
+for (const name of Object.keys(require('./package.json').dependencies)) {
+ if (name !== 'react-native-enriched-markdown' && name !== 'react-native') dependencies[name] = { platforms: { ios: null, android: null } };
+}
+dependencies['react-native-enriched-markdown'] = {root:path.resolve(__dirname,'../../packages/react-native-enriched-markdown'),platforms:{ios:{},android:{}}};
+module.exports={dependencies};

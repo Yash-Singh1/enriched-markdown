@@ -1,25 +1,11 @@
-const { withStorybook } = require('@storybook/react-native/withStorybook');
-
 const path = require('path');
-const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
-const { withMetroConfig } = require('react-native-monorepo-config');
-
-const root = path.resolve(__dirname, '../..');
-const defaultConfig = getDefaultConfig(__dirname);
-const { assetExts, sourceExts } = defaultConfig.resolver;
-
-module.exports = withStorybook(
-  withMetroConfig(
-    mergeConfig(defaultConfig, {
-      transformer: {
-        babelTransformerPath: require.resolve('react-native-svg-transformer'),
-        unstable_allowRequireContext: true,
-      },
-      resolver: {
-        assetExts: assetExts.filter((ext) => ext !== 'svg'),
-        sourceExts: [...sourceExts, 'svg'],
-      },
-    }),
-    { root, dirname: __dirname }
-  )
-);
+const {getDefaultConfig,mergeConfig}=require('@react-native/metro-config');
+const app=__dirname, root=path.resolve(app,'../..');
+module.exports=mergeConfig(getDefaultConfig(app),{
+ watchFolders:[root,'/Users/yashsingh/p/projects/enriched-markdown-latex'],
+ resolver:{resolveRequest:(context,name,platform)=>{
+  if(name==='react-native-enriched-markdown') return {type:'sourceFile',filePath:path.join(root,'packages/react-native-enriched-markdown/src/index.tsx')};
+  if(name==='react'||name.startsWith('react/')||name==='react-native'||name.startsWith('react-native/')) return context.resolveRequest({...context,originModulePath:path.join(app,'index.js')},name,platform);
+  return context.resolveRequest(context,name,platform);
+ }},maxWorkers:2,
+});
